@@ -43,8 +43,8 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_HOST: nextcloud_db
-      VIRTUAL_HOST: nextcloud.oneit-consulting.com
-      LETSENCRYPT_HOST: nextcloud.oneit-consulting.com
+      VIRTUAL_HOST: mydomain.com
+      LETSENCRYPT_HOST: mydomain.com
     networks:
       - net
     labels:

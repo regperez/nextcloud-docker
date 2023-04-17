@@ -1,0 +1,55 @@
+version: '3'
+
+services:
+  nextcloud_db:
+    container_name: nextcloud_db
+    image: mariadb:10.6
+    restart: always
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW --innodb-file-per-table=1 --skip-innodb-read-only-compressed
+    volumes:
+      - /home/nextcloud/mysql:/var/lib/mysql
+    environment:
+      REDIS_HOST: redis
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+    networks:
+      - net
+    labels:
+      - "com.docker.compose.project=nextcloud"
+
+  redis:
+    container_name: redis
+    image: redis:6.2
+    restart: always
+    volumes:
+      - /home/nextcloud/redis:/data
+    networks:
+      - net
+    labels:
+      - "com.docker.compose.project=nextcloud"
+  
+  nextcloud:
+    container_name: nextcloud
+    image: lscr.io/linuxserver/nextcloud
+    restart: always
+    volumes:
+      - /home/nextcloud/appdata:/config
+      - /home/nextcloud/data:/data
+      - /home/nextcloud/redis/socket:/var/run/redis/redis.sock
+    environment:
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_HOST: nextcloud_db
+      VIRTUAL_HOST: nextcloud.oneit-consulting.com
+      LETSENCRYPT_HOST: nextcloud.oneit-consulting.com
+    networks:
+      - net
+    labels:
+      - "com.docker.compose.project=nextcloud"
+      
+networks:
+    net:
+        external: true
